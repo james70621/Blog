@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Create Blog</title>
+    <style type="text/css">
+      body {
+        margin: 0 20px;
+        line-height: 1;
+      }
+
+      a {
+        text-decoration-line: none;
+      }
+
+      span {
+        float: left;
+        margin-right: 20px;
+      }
+
+      .title-wrapper {
+        margin-bottom: 10px;
+      }
+
+      .title-wrapper input {
+        width: 300px;
+      }
+
+      .content-wrapper textarea {
+        width: 300px;
+        height: 150px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1 style="border-bottom: 1px solid #ccc; padding-bottom: 10px;">
+      Create Blog
+    </h1>
+    <span>
+      <a href="./index.html">Home</a><br>
+    </span>
+    <span>
+      <a href="./admin.html">Your Page</a><br>
+    </span>
+    <span>
+      <a href="./login.html">Sign in</a>
+    </span>
+    <br>
+    <br>
+    <div>
+      <div class="title-wrapper">
+        <input id="text-title" />
+      </div>
+      <div class="content-wrapper">
+        <textarea id="text-content"></textarea>
+      </div>
+      <div>
+        <button id="btn-create">Create</button>
+      </div>
+    </div>
+
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+    <script>
+      // 發送 post 請求
+      function post(url, data = {}) {
+        return $.ajax({
+          type: "post",
+          url,
+          data: JSON.stringify(data),
+          contentType: "application/json",
+        });
+      }
+
+      // 獲取DOM元素
+      $textTitle = $("#text-title");
+      $textContent = $("#text-content");
+      $btnCreate = $("#btn-create");
+
+      // 提交數據
+      $btnCreate.click(() => {
+        const title = $textTitle.val().trim();
+        const content = $textContent.val().trim();
+        if (title === "" || content === "") {
+          alert("title or content is blank");
+          return;
+        }
+
+        const url = "/api/blog/new";
+        const data = {
+          title,
+          content,
+        };
+        post(url, data).then((res) => {
+          if (res.errno !== 0) {
+            alert("please login first");
+            return;
+          }
+          location.href = "/admin.html";
+        });
+      });
+    </script>
+  </body>
+</html>

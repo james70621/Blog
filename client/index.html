@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Home</title>
+    <style type="text/css">
+      body {
+        margin: 0 20px;
+        line-height: 1;
+      }
+
+      a {
+        text-decoration-line: none;
+      }
+
+      span {
+        float: left;
+        margin-right: 20px;
+      }
+
+      .title-wrapper {
+        padding: 15px 0;
+        border-top: 1px solid #ccc;
+      }
+
+      .title-wrapper .title {
+        font-size: 20px;
+        font-weight: bold;
+      }
+
+      .title-wrapper .info-wrapper span,
+      .title-wrapper .info-wrapper a {
+        font-size: 14px;
+        color: #999;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Home</h1>
+    <span>
+      <a href="./create.html">Create Blog</a>
+    </span>
+    <span>
+      <a href="./admin.html">Your Page</a><br>
+    </span>
+    <span>
+      <a href="./login.html">Sign in</a>
+    </span>
+    <br>
+    <br>
+    <div id="blog-container"></div>
+
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+    <script src="https://cdn.bootcss.com/moment.js/2.23.0/moment.min.js"></script>
+    <script src="https://cdn.bootcss.com/moment.js/2.23.0/locale/zh-cn.js"></script>
+    <script>
+      // 發送get請求
+      function get(url) {
+        return $.get(url);
+      }
+
+      // 顯示格式化時間
+      function getFormatDate(dt) {
+        return moment(dt).format("LL");
+      }
+
+      // 獲取url參數
+      function getUrlParams() {
+        let paramStr = location.href.split("?")[1] || "";
+        paramStr = paramStr.split("#")[0];
+        const result = {};
+        paramStr.split("&").forEach((itemStr) => {
+          const arr = itemStr.split("=");
+          const key = arr[0];
+          const val = arr[1];
+          result[key] = val;
+        });
+        return result;
+      }
+
+      // 獲取DOM元素
+      const $container = $("#blog-container");
+
+      // 拼接接口url
+      let url = "/api/blog/list";
+      const urlParams = getUrlParams();
+      if (urlParams.author) {
+        url += "?author=" + urlParams.author;
+      }
+
+      // 加載數據
+      get(url).then((res) => {
+        if (res.errno !== 0) {
+          alert("error");
+          return;
+        }
+
+        // 顯示blog列表
+        const data = res.data || [];
+        data.forEach((item) => {
+          $container.append(
+            $(`
+              <div class="title-wrapper">
+                  <p class="title">
+                  <a href="/detail.html?id=${item.id}" target="_blank">${
+                    item.title
+                  }</a>
+                  </p>
+                  <div class="info-wrapper">
+                    <span>
+                      <a href="/index.html?author=${item.author}">${
+                        item.author
+                      }</a>
+                    </span>
+                    <span>${getFormatDate(item.createTime)}</span>
+                  </div>
+              </div>
+            `)
+          );
+        });
+      });
+    </script>
+  </body>
+</html>
